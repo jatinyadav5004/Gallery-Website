@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Picture Gallery</title>
+  <style>
+    body {
+        margin: 0;
+        padding: 0;
+        font-family: Arial, sans-serif;
+      }
+      
+      header {
+        background-color: #333;
+        color: #fff;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 20px;
+      }
+      
+      h1 {
+        margin: 0;
+        font-size: 24px;
+      }
+      
+      .search {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin: 20px 0;
+        padding: 0 20px;
+      }
+      
+
+
+      .search input[type="text"] {
+        font-size: 18px;
+        padding: 10px;
+        border: none;
+        border-radius: 4px;
+        margin-right: 10px;
+        width: 300px;
+      }
+      
+      #search-btn {
+        background-color: #333;
+        margin-left:10px ;
+        color: #fff;
+        font-size: 14px;
+        width: 75px;
+        height:25px;
+        padding: 5px 10px ;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+      }
+      
+      #search-btn:hover {
+        background-color: #0d43cb;
+        transform: scale(1.1);
+      }
+      .gallery {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        grid-gap: 1rem;
+        padding: 0 20px;
+      }
+      
+      .gallery img {
+        width: 100%;
+        height: relative;
+        object-fit: cover;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: opacity 0.3s ease;
+        border-radius: 20px;
+      }
+      
+      .gallery img:hover {
+        opacity: 0.8;
+      }
+      
+      .gallery img:hover + .picture-info {
+        opacity: 1;
+      }
+      
+      .picture-info a {
+        color: #fff;
+        text-decoration: none;
+        font-weight: bold;
+      }
+         /* Responsive grid layout */
+    @media (max-width: 768px) {
+        .gallery {
+          grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        }
+      }
+  
+      @media (max-width: 576px) {
+        .gallery {
+          grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        }
+      }
+
+  /* Single column layout for mobile */
+  @media (max-width: 480px) {
+    .gallery {
+      grid-template-columns: repeat(1, 1fr);
+    }
+  }
+
+  
+  </style>
+</head>
+<body>
+    <br>
+  <div>
+    <label for="category">Category:</label>
+    <input type="text" id="search" name="search">
+    <button type="button" id="search-btn">Search</button>
+  </div>
+  <br><br>
+  <div class="gallery"></div>
+  <script>
+    const apiKey = "uyJi_36MmNmQItPcZYhiV2iPp6dbD5pPbkZWNznbeeY";
+    const perPage = 16;
+    let searchQuery = "nature";
+    let category = "nature";
+    let apiUrl = `https://api.unsplash.com/search/photos/?query=${searchQuery}&per_page=${perPage}&client_id=${apiKey}`;
+
+    function fetchPictures() {
+      apiUrl = `https://api.unsplash.com/search/photos/?query=${searchQuery}+${category}&per_page=${perPage}&client_id=${apiKey}`;
+      fetch(apiUrl)
+        .then(response => response.json())
+        .then(data => {
+          const pictures = data.results;
+          const gallery = document.querySelector(".gallery");
+          gallery.innerHTML = "";
+          pictures.forEach(picture => {
+            const img = document.createElement("img");
+            img.src = picture.urls.regular;
+            img.alt = picture.alt_description;
+            
+            const figcaption = document.createElement("figcaption");
+            figcaption.innerHTML = `Photo by <a href="${picture.user.links.html}?utm_source=picture-gallery&utm_medium=referral">${picture.user.name}</a> on <a href="https://unsplash.com?utm_source=picture-gallery&utm_medium=referral">Unsplash</a><br>${picture.description}`;
+            
+            const figure = document.createElement("figure");
+            figure.appendChild(img);
+            figure.appendChild(figcaption);
+            
+            gallery.appendChild(figure);
+          });
+        })
+        .catch(error => console.log(error));
+    }
+
+    document.getElementById("search-btn").addEventListener("click", function() {
+      searchQuery = document.getElementById("search").value;
+
+      fetchPictures();
+    });
+
+    fetchPictures();
+  </script>
+</body>
+</html>
